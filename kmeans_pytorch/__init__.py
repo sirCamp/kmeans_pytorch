@@ -17,9 +17,9 @@ def initialize(X, num_clusters, seed):
     """
     num_samples = len(X)
     if seed == None:
-        indices = np.random.choice(num_samples, min(num_clusters, num_samples), replace=False)
+        indices = np.random.choice(num_samples, min(num_clusters, num_samples-1), replace=False)
     else:
-        np.random.seed(seed) ; indices = np.random.choice(num_samples, min(num_clusters, num_samples), replace=False)
+        np.random.seed(seed) ; indices = np.random.choice(num_samples, min(num_clusters, num_samples-1), replace=False)
     initial_state = X[indices]
     return initial_state
 
