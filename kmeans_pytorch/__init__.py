@@ -6,29 +6,11 @@ from tqdm import tqdm
 
 from .soft_dtw_cuda import SoftDTW
 
-
-def initialize(X, num_clusters, seed):
-    """
-    initialize cluster centers
-    :param X: (torch.tensor) matrix
-    :param num_clusters: (int) number of clusters
-    :param seed: (int) seed for kmeans
-    :return: (np.array) initial state
-    """
-    num_samples = len(X)
-    if seed == None:
-        indices = np.random.choice(num_samples, min(num_clusters, num_samples-1), replace=False)
-    else:
-        np.random.seed(seed) ; indices = np.random.choice(num_samples, min(num_clusters, num_samples-1), replace=False)
-    initial_state = X[indices]
-    return initial_state
-
-
 def kmeans(
         X,
         num_clusters,
         distance='euclidean',
-        cluster_centers=[],
+        cluster_centers=None,
         tol=1e-4,
         tqdm_flag=True,
         iter_limit=0,
@@ -62,25 +44,7 @@ def kmeans(
     else:
         raise NotImplementedError
 
-    # convert to float
-    X = X.float()
-
-    # transfer to device
-    X = X.to(device)
-
-    # initialize
-    if type(cluster_centers) == list:  # ToDo: make this less annoyingly weird
-        initial_state = initialize(X, num_clusters, seed=seed)
-    else:
-        if tqdm_flag:
-            print('resuming')
-        # find data point closest to the initial cluster center
-        initial_state = cluster_centers
-        dis = pairwise_distance_function(X, initial_state)
-        choice_points = torch.argmin(dis, dim=0)
-        initial_state = X[choice_points]
-        initial_state = initial_state.to(device)
-
+    initial_state = cluster_centers.to(device)
     iteration = 0
     if tqdm_flag:
         tqdm_meter = tqdm(desc='[running kmeans]')
