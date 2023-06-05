@@ -182,7 +182,8 @@ def pairwise_cosine2(data1, data2, device=torch.device('cpu')):
 
       b: torch.Tensor, shape: [n, n_features]
     """
-    return 1-normalize(data2, dim=-1) @ normalize(data2, dim=-1).transpose(-2, -1)
+    print(data1.size(),data2.size())
+    return 1-normalize(data1, dim=-1) @ normalize(data2, dim=-1).transpose(-2, -1)
 
 def pairwise_soft_dtw(data1, data2, sdtw=None, device=torch.device('cpu')):
     if sdtw is None:
