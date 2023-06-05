@@ -3,7 +3,7 @@ from functools import partial
 import numpy as np
 import torch
 from tqdm import tqdm
-
+from torch.nn.functional import normalize
 from .soft_dtw_cuda import SoftDTW
 
 def kmeans(
