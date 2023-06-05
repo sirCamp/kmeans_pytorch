@@ -37,7 +37,7 @@ def kmeans(
     if distance == 'euclidean':
         pairwise_distance_function = partial(pairwise_distance, device=device, tqdm_flag=tqdm_flag)
     elif distance == 'cosine':
-        pairwise_distance_function = partial(pairwise_cosine, device=device)
+        pairwise_distance_function = partial(pairwise_cosine2, device=device)
     elif distance == 'soft_dtw':
         sdtw = SoftDTW(use_cuda=device.type == 'cuda', gamma=gamma_for_soft_dtw)
         pairwise_distance_function = partial(pairwise_soft_dtw, sdtw=sdtw, device=device)
@@ -114,7 +114,7 @@ def kmeans_predict(
     if distance == 'euclidean':
         pairwise_distance_function = partial(pairwise_distance, device=device, tqdm_flag=tqdm_flag)
     elif distance == 'cosine':
-        pairwise_distance_function = partial(pairwise_cosine, device=device)
+        pairwise_distance_function = partial(pairwise_cosine2, device=device)
     elif distance == 'soft_dtw':
         sdtw = SoftDTW(use_cuda=device.type == 'cuda', gamma=gamma_for_soft_dtw)
         pairwise_distance_function = partial(pairwise_soft_dtw, sdtw=sdtw, device=device)
@@ -172,6 +172,17 @@ def pairwise_cosine(data1, data2, device=torch.device('cpu')):
     cosine_dis = 1 - cosine.sum(dim=-1).squeeze()
     return cosine_dis
 
+
+def pairwise_cosine2(data1, data2, device=torch.device('cpu')):
+    """
+      Compute cosine similarity of 2 sets of vectors
+
+      Parameters:
+      a: torch.Tensor, shape: [m, n_features]
+
+      b: torch.Tensor, shape: [n, n_features]
+    """
+    return 1-normalize(data2, dim=-1) @ normalize(data2, dim=-1).transpose(-2, -1)
 
 def pairwise_soft_dtw(data1, data2, sdtw=None, device=torch.device('cpu')):
     if sdtw is None:
