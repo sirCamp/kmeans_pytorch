@@ -13,7 +13,7 @@ def kmeans(
         cluster_centers=None,
         tol=1e-4,
         tqdm_flag=True,
-        iter_limit=0,
+        iter_limit=500,
         device=torch.device('cpu'),
         gamma_for_soft_dtw=0.001,
         seed=None,
@@ -47,7 +47,7 @@ def kmeans(
     initial_state = cluster_centers.to(device)
     iteration = 0
     if tqdm_flag:
-        tqdm_meter = tqdm(desc='[running kmeans]')
+        tqdm_meter = tqdm(desc='[running kmeans]', total=iter_limit)
     while True:
 
         dis = pairwise_distance_function(X, initial_state)
